@@ -27,4 +27,5 @@ Route::group(['middleware' => 'api', 'prefix' => 'auth'], function ($router) {
 
 Route::group(['middleware' => 'api', 'prefix' => 'user'], function ($router) {
     Route::get('/', [UserController::class, 'index']);
+    Route::get('/{user:username}', [UserController::class, 'show']);
 });

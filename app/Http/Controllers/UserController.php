@@ -9,11 +9,16 @@ class UserController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('auth:api', ['except' => ['index']]);
+        $this->middleware('auth:api', ['except' => ['index', 'show']]);
     }
 
     public function index()
     {
         return User::all();
+    }
+
+    public function show(User $user)
+    {
+        return $user;
     }
 }
