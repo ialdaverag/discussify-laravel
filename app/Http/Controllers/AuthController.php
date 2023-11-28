@@ -57,6 +57,11 @@ class AuthController extends Controller
         return $this->respondWithToken(auth()->refresh());
     }
 
+    public function me()
+    {
+        return response()->json(auth()->user());
+    }
+
     protected function respondWithToken($token)
     {
         return response()->json(['access_token' => $token], 200);
