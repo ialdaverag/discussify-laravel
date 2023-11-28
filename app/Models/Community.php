@@ -1,0 +1,47 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+
+class Community extends Model
+{
+    use HasFactory;
+
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array<int, string>
+     */
+    protected $fillable = [
+        'name',
+        'about',
+    ];
+
+    /**
+     * Get the user that owns the community.
+     */
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    /**
+     * Get the subscribers of the community.
+     */
+    public function subscribers(): BelongsToMany
+    {
+        return $this->belongsToMany(User::class, 'subscribers');
+    }
+
+    /**
+     * Get the moderators of the community.
+     */
+    public function moderators(): BelongsToMany
+    {
+        return $this->belongsToMany(User::class, 'moderators');
+    }
+}

@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\CommunityController;
 
 /*
 |--------------------------------------------------------------------------
@@ -28,4 +29,12 @@ Route::group(['middleware' => 'api', 'prefix' => 'auth'], function ($router) {
 Route::group(['middleware' => 'api', 'prefix' => 'user'], function ($router) {
     Route::get('/', [UserController::class, 'index']);
     Route::get('/{user:username}', [UserController::class, 'show']);
+});
+
+Route::group(['middleware' => 'api', 'prefix' => 'community'], function ($router) {
+    Route::post('/', [CommunityController::class, 'store']);
+    // Route::get('/', [CommunityController::class, 'index']);
+    // Route::get('/{community:name}', [CommunityController::class, 'show']);
+    // Route::patch('/{community:name}', [CommunityController::class, 'update']);
+    // Route::delete('/{community:name}', [CommunityController::class, 'destroy']);
 });

@@ -9,6 +9,10 @@ use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+
 class User extends Authenticatable implements JWTSubject
 {
     use HasApiTokens, HasFactory, Notifiable;
@@ -41,6 +45,30 @@ class User extends Authenticatable implements JWTSubject
     protected $casts = [
         'password' => 'hashed',
     ];
+
+    /**
+     * Get the communities that the user owns.
+     */
+    public function communities(): HasMany
+    {
+        return $this->hasMany(Community::class);
+    }
+
+    /**
+     * Get the subscriptions of the user.
+     */
+    public function subscriptions(): BelongsToMany
+    {
+        return $this->belongsToMany(Community::class, 'subscribers');
+    }
+
+    /**
+     * Get the moderations of the user.
+     */
+    public function moderations(): BelongsToMany
+    {
+        return $this->belongsToMany(Community::class, 'moderators');
+    }
 
     /**
      * Get the identifier that will be stored in the subject claim of the JWT.
