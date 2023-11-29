@@ -2,10 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Support\Facades\Gate;
+
 use App\Models\Community;
 use Illuminate\Http\Request;
 
 use App\Http\Requests\CommunityStoreRequest;
+use App\Http\Requests\CommunityUpdateRequest;
 use App\Http\Resources\CommunityResource;
 
 class CommunityController extends Controller
@@ -52,9 +55,15 @@ class CommunityController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Community $community)
+    public function update(CommunityUpdateRequest $request, Community $community)
     {
-        //
+        if (Gate::denies('update-community', $community)) {
+            return response()->json(['error' => 'Unauthorized'], 403);
+        }
+
+        $community->update($request->validated());
+
+        return response()->json(new CommunityResource($community), 200);
     }
 
     /**
