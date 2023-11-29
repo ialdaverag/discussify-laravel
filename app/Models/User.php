@@ -71,6 +71,14 @@ class User extends Authenticatable implements JWTSubject
     }
 
     /**
+     * Check if the user is subscribed to a community.
+     */
+    public function isSubscribedTo(Community $community)
+    {
+        return $this->subscriptions()->where('community_id', $community->id)->exists();
+    }
+
+    /**
      * Get the identifier that will be stored in the subject claim of the JWT.
      *
      * @return mixed

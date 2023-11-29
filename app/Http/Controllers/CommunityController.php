@@ -82,4 +82,20 @@ class CommunityController extends Controller
     
         return response()->json(null, 204);
     }
+
+    /**
+     * Subscribe to the specified community.
+     */
+    public function subscribe(Community $community)
+    {
+        $user = auth()->user();
+
+        if ($user->isSubscribedTo($community)) {
+            return response()->json(['error' => 'User is already subscribed to the community'], 400);
+        }
+
+        $user->subscriptions()->attach($community->id);
+
+        return response()->json(null, 204);
+    }
 }
