@@ -71,6 +71,15 @@ class CommunityController extends Controller
      */
     public function destroy(Community $community)
     {
-        //
+        if (Gate::denies('delete-community', $community)) {
+            return response()->json(['error' => 'Unauthorized'], 403);
+        }
+
+        $community->moderators()->detach();
+        $community->subscribers()->detach();
+    
+        $community->delete();
+    
+        return response()->json(null, 204);
     }
 }

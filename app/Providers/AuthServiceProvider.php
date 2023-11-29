@@ -26,8 +26,11 @@ class AuthServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-
         Gate::define('update-community', function (User $user, Community $community) {
+            return $user->id === $community->user_id;
+        });
+
+        Gate::define('delete-community', function (User $user, Community $community) {
             return $user->id === $community->user_id;
         });
     }

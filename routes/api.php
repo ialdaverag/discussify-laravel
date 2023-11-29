@@ -36,5 +36,5 @@ Route::group(['middleware' => 'api', 'prefix' => 'community'], function ($router
     Route::get('/', [CommunityController::class, 'index']);
     Route::get('/{community:name}', [CommunityController::class, 'show']);
     Route::patch('/{community:name}', [CommunityController::class, 'update']);
-    // Route::delete('/{community:name}', [CommunityController::class, 'destroy']);
+    Route::delete('/{community:name}', [CommunityController::class, 'destroy']);
 });
