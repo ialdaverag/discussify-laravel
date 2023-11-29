@@ -25,7 +25,7 @@ class CommunityController extends Controller
      */
     public function index()
     {
-        //
+        return Community::all();
     }
 
     /**
@@ -34,6 +34,9 @@ class CommunityController extends Controller
     public function store(CommunityStoreRequest $request)
     {
         $community = auth()->user()->communities()->create($request->validated());
+        
+        $community->moderators()->attach(auth()->id());
+        $community->subscribers()->attach(auth()->id());
 
         return response()->json(new CommunityResource($community), 201);
     }
