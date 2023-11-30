@@ -46,6 +46,6 @@ Route::group(['middleware' => 'api', 'prefix' => 'community'], function ($router
     Route::post('/{name}/unban/{username}', [CommunityController::class, 'unbanUser']);
 
     Route::get('/{community:name}/subscribers', [CommunityController::class, 'getSubscribers']);
-    // Route::get('/{community:name}/moderators', [CommunityController::class, 'getModerators']);
+    Route::get('/{community:name}/moderators', [CommunityController::class, 'getModerators']);
     // Route::get('/{community:name}/banned', [CommunityController::class, 'getBans']);
 });

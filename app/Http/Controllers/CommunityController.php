@@ -269,4 +269,12 @@ class CommunityController extends Controller
     {
         return $community->subscribers;
     }
+
+    /**
+     * Get the moderators of the specified community.
+     */
+    public function getModerators(Community $community)
+    {
+        return $community->moderators;
+    }
 }
