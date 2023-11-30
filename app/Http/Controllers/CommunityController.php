@@ -261,4 +261,12 @@ class CommunityController extends Controller
 
         return response()->json(null, 204);
     }
+
+    /**
+     * Get the subscribers of the specified community.
+     */
+    public function getSubscribers(Community $community)
+    {
+        return $community->subscribers;
+    }
 }
