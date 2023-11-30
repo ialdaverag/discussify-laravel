@@ -98,4 +98,20 @@ class CommunityController extends Controller
 
         return response()->json(null, 204);
     }
+
+    /**
+     * Unsubscribe from the specified community.
+     */
+    public function unsubscribe(Community $community)
+    {
+        $user = auth()->user();
+
+        if (!$user->isSubscribedTo($community)) {
+            return response()->json(['error' => 'User is not subscribed to the community'], 400);
+        }
+
+        $user->subscriptions()->detach($community->id);
+
+        return response()->json(null, 204);
+    }
 }
