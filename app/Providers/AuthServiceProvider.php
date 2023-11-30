@@ -41,5 +41,9 @@ class AuthServiceProvider extends ServiceProvider
         Gate::define('remove-moderator', function (User $user, Community $community) {
             return $user->id === $community->user_id;
         });
+
+        Gate::define('ban-user', function (User $user, Community $community) {
+            return $user->isModeratorOf($community);
+        });
     }
 }

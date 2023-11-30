@@ -46,4 +46,12 @@ class Community extends Model
     {
         return $this->belongsToMany(User::class, 'moderators', 'community_id', 'user_id');
     }
+
+    /**
+     * Get the baneed users of the community.
+     */
+    public function bans(): BelongsToMany
+    {
+        return $this->belongsToMany(User::class, 'bans', 'community_id', 'user_id');
+    }
 }

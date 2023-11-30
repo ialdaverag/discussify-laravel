@@ -71,6 +71,14 @@ class User extends Authenticatable implements JWTSubject
     }
 
     /**
+     * Get the bans of the user.
+     */
+    public function bans(): BelongsToMany
+    {
+        return $this->belongsToMany(Community::class, 'bans');
+    }
+
+    /**
      * Check if the user is subscribed to a community.
      */
     public function isSubscribedTo(Community $community)
@@ -84,6 +92,14 @@ class User extends Authenticatable implements JWTSubject
     public function isModeratorOf(Community $community)
     {
         return $this->moderations()->where('community_id', $community->id)->exists();
+    }
+
+    /**
+     * Check if the user is banned from a community.
+     */
+    public function isBannedFrom(Community $community)
+    {
+        return $this->bans()->where('community_id', $community->id)->exists();
     }
 
     /**

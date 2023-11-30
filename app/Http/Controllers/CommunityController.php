@@ -92,6 +92,11 @@ class CommunityController extends Controller
     {
         $user = auth()->user();
 
+        // Check if the user is banned from the community
+        if ($user->isBannedFrom($community)) {
+            return response()->json(['error' => 'User is banned from the community'], 400);
+        }
+
         if ($user->isSubscribedTo($community)) {
             return response()->json(['error' => 'User is already subscribed to the community'], 400);
         }
@@ -136,6 +141,11 @@ class CommunityController extends Controller
             return response()->json(['error' => 'Unauthorized'], 403);
         }
 
+        // Check if the user is banned from the community
+        if ($user->isBannedFrom($community)) {
+            return response()->json(['error' => 'User is banned from the community'], 400);
+        }
+
         // Check if the user to be added as a moderator is subscribed to the community
         if (!$user->isSubscribedTo($community)) {
             return response()->json(['error' => 'User must be subscribed to the community'], 400);
@@ -174,6 +184,53 @@ class CommunityController extends Controller
 
         // Remove the user as a moderator of the community
         $community->moderators()->detach($user->id);
+
+        return response()->json(null, 204);
+    }
+
+    /**
+     * Ban a user from the specified community.
+     */
+    public function banUser($community, $user)
+    {
+        // Check if the community exists
+        $community = Community::where('name', $community)->firstOrFail();
+
+        // Check if the user exists
+        $user = User::where('username', $user)->firstOrFail();
+
+        // Check if the user is a moderator of the community
+        if (Gate::denies('ban-user', $community)) {
+            return response()->json(['error' => 'Unauthorized'], 403);
+        }
+
+        // Check if the user is already banned from the community
+        if ($user->bans()->where('community_id', $community->id)->exists()) {
+            return response()->json(['error' => 'User is already banned from the community'], 400);
+        }
+
+        // Check if the user is a subscriber of the community
+        if (!$user->isSubscribedTo($community)) {
+            return response()->json(['error' => 'User is not subscribed to the community'], 400);
+        }
+
+        // User cannot ban themselves
+        if ($user->id === auth()->id()) {
+            return response()->json(['error' => 'User cannot ban themselves'], 400);
+        }
+
+        // Cannot ban the owner of the community
+        if ($user->id === $community->owner_id) {
+            return response()->json(['error' => 'User cannot ban the owner of the community'], 400);
+        }
+
+        // Remove moderator privileges from the user
+        if ($user->isModeratorOf($community)) {
+            $community->moderators()->detach($user->id);
+        }
+
+        // Ban the user from the community
+        $community->bans()->attach($user->id);
 
         return response()->json(null, 204);
     }
