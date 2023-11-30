@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use Illuminate\Support\Facades\Gate;
 
+use App\Models\User;
 use App\Models\Community;
+
 use Illuminate\Http\Request;
 
 use App\Http\Requests\CommunityStoreRequest;
@@ -111,6 +113,41 @@ class CommunityController extends Controller
         }
 
         $user->subscriptions()->detach($community->id);
+
+        if ($user->isModeratorOf($community)) {
+            $community->moderators()->detach($user->id);
+        }
+
+        return response()->json(null, 204);
+    }
+
+    /**
+     * Add a moderator to the specified community.
+     */
+    public function addModerator($community, $user)
+    {
+        // Check if the community exists
+        $community = Community::where('name', $community)->firstOrFail();
+
+        // Check if the user exists
+        $user = User::where('username', $user)->firstOrFail();
+
+        if (Gate::denies('add-moderator', $community)) {
+            return response()->json(['error' => 'Unauthorized'], 403);
+        }
+
+        // Check if the user to be added as a moderator is subscribed to the community
+        if (!$user->isSubscribedTo($community)) {
+            return response()->json(['error' => 'User must be subscribed to the community'], 400);
+        }
+
+        // Check if the user is already a moderator of the community
+        if ($user->isModeratorOf($community)) {
+            return response()->json(['error' => 'User is already a moderator of the community'], 400);
+        }
+
+        // Add the user as a moderator of the community
+        $community->moderators()->attach($user->id);
 
         return response()->json(null, 204);
     }

@@ -7,6 +7,8 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
+use App\Models\User;
+
 class Community extends Model
 {
     use HasFactory;
@@ -42,6 +44,6 @@ class Community extends Model
      */
     public function moderators(): BelongsToMany
     {
-        return $this->belongsToMany(User::class, 'moderators');
+        return $this->belongsToMany(User::class, 'moderators', 'community_id', 'user_id');
     }
 }

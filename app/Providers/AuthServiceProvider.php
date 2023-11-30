@@ -34,8 +34,10 @@ class AuthServiceProvider extends ServiceProvider
             return $user->id === $community->user_id;
         });
 
-        Gate::define('subscribe-community', function (User $user, Community $community) {
-            return !$community->subscribers()->where('user_id', $user->id)->exists();
+        Gate::define('add-moderator', function (User $user, Community $community) {
+            return $user->id === $community->user_id;
         });
+
+        
     }
 }

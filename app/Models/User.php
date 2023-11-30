@@ -79,6 +79,14 @@ class User extends Authenticatable implements JWTSubject
     }
 
     /**
+     * Check if the user is a moderator of a community.
+     */
+    public function isModeratorOf(Community $community)
+    {
+        return $this->moderations()->where('community_id', $community->id)->exists();
+    }
+
+    /**
      * Get the identifier that will be stored in the subject claim of the JWT.
      *
      * @return mixed
