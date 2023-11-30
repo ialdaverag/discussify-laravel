@@ -151,4 +151,30 @@ class CommunityController extends Controller
 
         return response()->json(null, 204);
     }
+
+    /**
+     * Remove a moderator from the specified community.
+     */
+    public function removeModerator($community, $user)
+    {
+        // Check if the community exists
+        $community = Community::where('name', $community)->firstOrFail();
+
+        // Check if the user exists
+        $user = User::where('username', $user)->firstOrFail();
+
+        if (Gate::denies('remove-moderator', $community)) {
+            return response()->json(['error' => 'Unauthorized'], 403);
+        }
+
+        // Check if the user is a moderator of the community
+        if (!$user->isModeratorOf($community)) {
+            return response()->json(['error' => 'User is not a moderator of the community'], 400);
+        }
+
+        // Remove the user as a moderator of the community
+        $community->moderators()->detach($user->id);
+
+        return response()->json(null, 204);
+    }
 }

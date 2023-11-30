@@ -41,7 +41,7 @@ Route::group(['middleware' => 'api', 'prefix' => 'community'], function ($router
     Route::post('/{community:name}/subscribe', [CommunityController::class, 'subscribe']);
     Route::post('/{community:name}/unsubscribe', [CommunityController::class, 'unsubscribe']);
     Route::post('/{name}/mod/{username}', [CommunityController::class, 'addModerator']);
-    // Route::post('/{community:name}/unmod/{user:username}', [CommunityController::class, 'removeModerator']);
+    Route::post('/{name}/unmod/{username}', [CommunityController::class, 'removeModerator']);
     // Route::post('/{community:name}/ban/{user:username}', [CommunityController::class, 'banUser']);
     // Route::post('/{community:name}/unban/{user:username}', [CommunityController::class, 'unbanUser']);
 });
