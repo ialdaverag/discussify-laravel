@@ -234,4 +234,31 @@ class CommunityController extends Controller
 
         return response()->json(null, 204);
     }
+
+    /**
+     * Unban a user from the specified community.
+     */
+    public function unbanUser($community, $user)
+    {
+        // Check if the community exists
+        $community = Community::where('name', $community)->firstOrFail();
+
+        // Check if the user exists
+        $user = User::where('username', $user)->firstOrFail();
+
+        // Check if the user is a moderator of the community
+        if (Gate::denies('unban-user', $community)) {
+            return response()->json(['error' => 'Unauthorized'], 403);
+        }
+
+        // Check if the user is banned from the community
+        if (!$user->isBannedFrom($community)) {
+            return response()->json(['error' => 'User is not banned from the community'], 400);
+        }
+
+        // Unban the user from the community
+        $community->bans()->detach($user->id);
+
+        return response()->json(null, 204);
+    }
 }

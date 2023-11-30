@@ -45,5 +45,9 @@ class AuthServiceProvider extends ServiceProvider
         Gate::define('ban-user', function (User $user, Community $community) {
             return $user->isModeratorOf($community);
         });
+
+        Gate::define('unban-user', function (User $user, Community $community) {
+            return $user->isModeratorOf($community);
+        });
     }
 }
