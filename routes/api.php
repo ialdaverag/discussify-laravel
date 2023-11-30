@@ -6,17 +6,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\CommunityController;
-
-/*
-|--------------------------------------------------------------------------
-| API Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register API routes for your application. These
-| routes are loaded by the RouteServiceProvider and all of them will
-| be assigned to the "api" middleware group. Make something great!
-|
-*/
+use App\Http\Controllers\PostController;
 
 Route::group(['middleware' => 'api', 'prefix' => 'auth'], function ($router) {
     Route::post('signup', [AuthController::class, 'signup']);
@@ -48,4 +38,12 @@ Route::group(['middleware' => 'api', 'prefix' => 'community'], function ($router
     Route::get('/{community:name}/subscribers', [CommunityController::class, 'getSubscribers']);
     Route::get('/{community:name}/moderators', [CommunityController::class, 'getModerators']);
     Route::get('/{community:name}/banned', [CommunityController::class, 'getBans']);
+});
+
+Route::group(['middleware' => 'api', 'prefix' => 'post'], function ($router) {
+    Route::post('/', [PostController::class, 'store']);
+    // Route::get('/', [PostController::class, 'index']);
+    // Route::get('/{post:id}', [PostController::class, 'show']);
+    // Route::patch('/{post:id}', [PostController::class, 'update']);
+    // Route::delete('/{post:id}', [PostController::class, 'destroy']);
 });

@@ -13,6 +13,9 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
+use App\Models\Community;
+use App\Models\Post;
+
 class User extends Authenticatable implements JWTSubject
 {
     use HasApiTokens, HasFactory, Notifiable;
@@ -76,6 +79,14 @@ class User extends Authenticatable implements JWTSubject
     public function bans(): BelongsToMany
     {
         return $this->belongsToMany(Community::class, 'bans');
+    }
+
+    /**
+     * Get the posts of the user.
+     */
+    public function posts(): HasMany
+    {
+        return $this->hasMany(Post::class);
     }
 
     /**

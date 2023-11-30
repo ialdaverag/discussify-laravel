@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 use App\Models\User;
+use App\Models\Post;
 
 class Community extends Model
 {
@@ -53,5 +54,13 @@ class Community extends Model
     public function bans(): BelongsToMany
     {
         return $this->belongsToMany(User::class, 'bans', 'community_id', 'user_id');
+    }
+
+    /**
+     * Get the posts of the community.
+     */
+    public function posts(): HasMany
+    {
+        return $this->hasMany(Post::class);
     }
 }
