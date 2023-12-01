@@ -159,4 +159,20 @@ class PostController extends Controller
             return response()->json(['message' => 'Post downvoted successfully'], 204);
         }
     }
+
+    /**
+     * Remove the specified resource from storage.
+     */
+    public function unvote(Post $post)
+    {
+        $user = auth()->user();
+
+        if (!$user->votes()->where('post_id', $post->id)->exists()) {
+            return response()->json(['error' => 'Post not voted'], 400);
+        }
+
+        $user->votes()->detach($post);
+
+        return response()->json(null, 204);
+    }
 }
