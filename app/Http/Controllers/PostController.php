@@ -2,10 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Post;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
+
+use App\Models\Post;
 
 use App\Http\Requests\PostStoreRequest;
+use App\Http\Requests\PostUpdateRequest;
 use App\Http\Resources\PostResource;
 
 class PostController extends Controller
@@ -49,9 +52,15 @@ class PostController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Post $post)
+    public function update(PostUpdateRequest $request, Post $post)
     {
-        //
+        if (Gate::denies('update-post', $post)) {
+            return response()->json(['error' => 'Unauthorized'], 403);
+        }
+
+        $post->update($request->validated());
+
+        return response()->json(new PostResource($post), 200);
     }
 
     /**

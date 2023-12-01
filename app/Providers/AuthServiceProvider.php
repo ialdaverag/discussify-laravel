@@ -7,6 +7,7 @@ use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvid
 
 use App\Models\User;
 use App\Models\Community;
+use App\Models\Post;
 
 class AuthServiceProvider extends ServiceProvider
 {
@@ -48,6 +49,10 @@ class AuthServiceProvider extends ServiceProvider
 
         Gate::define('unban-user', function (User $user, Community $community) {
             return $user->isModeratorOf($community);
+        });
+
+        Gate::define('update-post', function (User $user, Post $post) {
+            return $user->id === $post->user_id;
         });
     }
 }
