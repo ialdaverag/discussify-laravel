@@ -109,4 +109,29 @@ class PostController extends Controller
 
         return response()->json(null, 204);
     }
+
+    /**
+     * Upvote the specified resource from storage.
+     */
+    public function upvote(Post $post)
+    {
+        $user = auth()->user();
+
+        if ($user->votes()->where('post_id', $post->id)->exists()) {
+            $vote = $user->votes()->where('post_id', $post->id)->first();
+
+            if ($vote->pivot->direction == -1) {
+                $vote->pivot->direction = 1;
+                $vote->pivot->save();
+
+                return response()->json(['message' => 'Vote changed to positive'], 200);
+            } else {
+                return response()->json(['error' => 'Post already voted'], 400);
+            }
+        } else {
+            $user->votes()->attach($post, ['direction' => 1]);
+
+            return response()->json(['message' => 'Post upvoted successfully'], 204);
+        }
+    }
 }

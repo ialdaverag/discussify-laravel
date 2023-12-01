@@ -47,4 +47,12 @@ class Post extends Model
     {
         return $this->hasMany(Bookmark::class);
     }
+
+    /**
+     * Get the votes for the post.
+     */
+    public function votes(): BelongsToMany
+    {
+        return $this->belongsToMany(User::class, 'post_votes')->withPivot('direction');
+    }
 }
