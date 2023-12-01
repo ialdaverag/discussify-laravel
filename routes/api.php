@@ -45,5 +45,5 @@ Route::group(['middleware' => 'api', 'prefix' => 'post'], function ($router) {
     Route::get('/', [PostController::class, 'index']);
     Route::get('/{post:id}', [PostController::class, 'show']);
     Route::patch('/{post:id}', [PostController::class, 'update']);
-    // Route::delete('/{post:id}', [PostController::class, 'destroy']);
+    Route::delete('/{post:id}', [PostController::class, 'destroy']);
 });

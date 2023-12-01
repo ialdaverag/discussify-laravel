@@ -68,6 +68,12 @@ class PostController extends Controller
      */
     public function destroy(Post $post)
     {
-        //
+        if (Gate::denies('delete-post', $post)) {
+            return response()->json(['error' => 'Unauthorized'], 403);
+        }
+
+        $post->delete();
+
+        return response()->json(null, 204);
     }
 }
