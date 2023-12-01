@@ -92,4 +92,21 @@ class PostController extends Controller
 
         return response()->json(null, 204);
     }
+
+    /**
+     * Unbookmark the specified resource from storage.
+     */
+
+    public function unbookmark(Post $post)
+    {
+        $user = auth()->user();
+
+        if (!$user->bookmarks()->where('post_id', $post->id)->exists()) {
+            return response()->json(['error' => 'Post not bookmarked'], 400);
+        }
+
+        $user->bookmarks()->detach($post);
+
+        return response()->json(null, 204);
+    }
 }
