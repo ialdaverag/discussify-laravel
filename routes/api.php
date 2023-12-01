@@ -46,4 +46,7 @@ Route::group(['middleware' => 'api', 'prefix' => 'post'], function ($router) {
     Route::get('/{post:id}', [PostController::class, 'show']);
     Route::patch('/{post:id}', [PostController::class, 'update']);
     Route::delete('/{post:id}', [PostController::class, 'destroy']);
+
+    ROute::post('/{post:id}/bookmark', [PostController::class, 'bookmark']);
+    // ROute::post('/{post:id}/unbookmark', [PostController::class, 'unbookmark']);
 });

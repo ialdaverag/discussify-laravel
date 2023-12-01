@@ -39,4 +39,12 @@ class Post extends Model
     {
         return $this->belongsTo(Community::class);
     }
+
+    /**
+     * Get the bookmarks for the post.
+     */
+    public function bookmarks(): HasMany
+    {
+        return $this->hasMany(Bookmark::class);
+    }
 }

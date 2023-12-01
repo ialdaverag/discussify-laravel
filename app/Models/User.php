@@ -90,6 +90,14 @@ class User extends Authenticatable implements JWTSubject
     }
 
     /**
+     * Get the bookmarks of the user.
+     */
+    public function bookmarks(): BelongsToMany
+    {
+        return $this->belongsToMany(Post::class, 'post_bookmarks');
+    }
+
+    /**
      * Check if the user is subscribed to a community.
      */
     public function isSubscribedTo(Community $community)

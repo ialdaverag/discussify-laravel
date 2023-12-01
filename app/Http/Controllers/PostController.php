@@ -76,4 +76,20 @@ class PostController extends Controller
 
         return response()->json(null, 204);
     }
+
+    /**
+     * Bookmark the specified resource from storage.
+     */ 
+    public function bookmark(Post $post)
+    {
+        $user = auth()->user();
+
+        if ($user->bookmarks()->where('post_id', $post->id)->exists()) {
+            return response()->json(['error' => 'Post already bookmarked'], 400);
+        }
+
+        $user->bookmarks()->attach($post);
+
+        return response()->json(null, 204);
+    }
 }
