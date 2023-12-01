@@ -51,6 +51,6 @@ Route::group(['middleware' => 'api', 'prefix' => 'post'], function ($router) {
     Route::post('/{post:id}/unbookmark', [PostController::class, 'unbookmark']);
 
     Route::post('/{post:id}/vote/up', [PostController::class, 'upvote']);
-    // Route::post('/{post:id}/vote/down', [PostController::class, 'downvote']);
+    Route::post('/{post:id}/vote/down', [PostController::class, 'downvote']);
     // Route::post('/{post:id}/vote/cancel', [PostController::class, 'unvote']);
 });
