@@ -98,10 +98,26 @@ class CommentController extends Controller
         $user = auth()->user();
 
         if ($user->commentBookmarks()->where('comment_bookmarks.comment_id', $comment->id)->exists()) {
-            return response()->json(['error' => 'Comentario ya está marcado como favorito'], 409);
+            return response()->json(['error' => 'Comment already bookmarked'], 409);
         }
 
         $user->commentBookmarks()->attach($comment);
+
+        return response()->json(null, 204);
+    }
+
+    /**
+     * Unbookmark the specified resource from storage.
+     */
+    public function unbookmark(Comment $comment)
+    {
+        $user = auth()->user();
+
+        if (!$user->commentBookmarks()->where('comment_bookmarks.comment_id', $comment->id)->exists()) {
+            return response()->json(['error' => 'Comment is not bookmarked'], 409);
+        }
+
+        $user->commentBookmarks()->detach($comment);
 
         return response()->json(null, 204);
     }
