@@ -196,7 +196,17 @@ class CommentController extends Controller
     public function getUpvoters(Comment $comment)
     {
         $upvoters = $comment->votes()->wherePivot('direction', 1)->get();
-        
+
         return response()->json($upvoters, 200);
+    }
+
+    /**
+     * Get the downvoters of the specified resource from storage.
+     */
+    public function getDownvoters(Comment $comment)
+    {
+        $downvoters = $comment->votes()->wherePivot('direction', -1)->get();
+
+        return response()->json($downvoters, 200);
     }
 }
