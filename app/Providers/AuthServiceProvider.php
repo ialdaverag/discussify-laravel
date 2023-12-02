@@ -8,6 +8,7 @@ use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvid
 use App\Models\User;
 use App\Models\Community;
 use App\Models\Post;
+use App\Models\Comment;
 
 class AuthServiceProvider extends ServiceProvider
 {
@@ -57,6 +58,10 @@ class AuthServiceProvider extends ServiceProvider
 
         Gate::define('delete-post', function (User $user, Post $post) {
             return $user->id === $post->user_id;
+        });
+
+        Gate::define('update-comment', function (User $user, Comment $comment) {
+            return $user->id === $comment->user_id;
         });
     }
 }

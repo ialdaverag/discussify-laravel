@@ -3,9 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Models\Comment;
+
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 
 use App\Http\Requests\CommentStoreRequest;
+use App\Http\Requests\CommentUpdateRequest;
 use App\Http\Resources\CommentResource;
 
 class CommentController extends Controller
@@ -60,9 +63,17 @@ class CommentController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Comment $comment)
+    public function update(CommentUpdateRequest $request, Comment $comment)
     {
-        //
+        if (Gate::denies('update-comment', $comment)) {
+            return response()->json(['error' => 'Unauthorized'], 403);
+        }
+
+        $validated = $request->validated();
+
+        $comment->update($validated);
+
+        return response()->json($comment, 200);
     }
 
     /**

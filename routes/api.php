@@ -60,6 +60,6 @@ Route::group(['middleware' => 'api', 'prefix' => 'comment'], function ($router) 
     Route::post('/', [CommentController::class, 'store']);
     Route::get('/', [CommentController::class, 'index']);
     Route::get('/{comment:id}', [CommentController::class, 'show']);
-    // Route::patch('/{comment:id}', [CommentController::class, 'update']);
+    Route::patch('/{comment:id}', [CommentController::class, 'update']);
     // Route::delete('/{comment:id}', [CommentController::class, 'destroy']);
 });
