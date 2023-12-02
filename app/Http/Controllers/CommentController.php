@@ -89,4 +89,20 @@ class CommentController extends Controller
 
         return response()->json(null, 204);
     }
+
+    /**
+     * Bookmark the specified resource from storage.
+     */
+    public function bookmark(Comment $comment)
+    {
+        $user = auth()->user();
+
+        if ($user->commentBookmarks()->where('comment_bookmarks.comment_id', $comment->id)->exists()) {
+            return response()->json(['error' => 'Comentario ya está marcado como favorito'], 409);
+        }
+
+        $user->commentBookmarks()->attach($comment);
+
+        return response()->json(null, 204);
+    }
 }

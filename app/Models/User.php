@@ -115,6 +115,14 @@ class User extends Authenticatable implements JWTSubject
     }
 
     /**
+     * Get the comment bookmarks of the user.
+     */
+    public function commentBookmarks(): BelongsToMany
+    {
+        return $this->belongsToMany(Comment::class, 'comment_bookmarks');
+    }   
+
+    /**
      * Check if the user is subscribed to a community.
      */
     public function isSubscribedTo(Community $community)

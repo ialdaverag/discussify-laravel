@@ -62,4 +62,7 @@ Route::group(['middleware' => 'api', 'prefix' => 'comment'], function ($router) 
     Route::get('/{comment:id}', [CommentController::class, 'show']);
     Route::patch('/{comment:id}', [CommentController::class, 'update']);
     Route::delete('/{comment:id}', [CommentController::class, 'destroy']);
+
+    Route::post('/{comment:id}/bookmark', [CommentController::class, 'bookmark']);
+    // Route::post('/{comment:id}/unbookmark', [CommentController::class, 'unbookmark']);
 });
