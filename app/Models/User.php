@@ -123,6 +123,14 @@ class User extends Authenticatable implements JWTSubject
     }   
 
     /**
+     * Get the comment votes of the user.
+     */
+    public function commentVotes(): BelongsToMany
+    {
+        return $this->belongsToMany(Comment::class, 'comment_votes')->withPivot('direction');
+    }
+
+    /**
      * Check if the user is subscribed to a community.
      */
     public function isSubscribedTo(Community $community)

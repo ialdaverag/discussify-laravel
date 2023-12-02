@@ -65,4 +65,8 @@ Route::group(['middleware' => 'api', 'prefix' => 'comment'], function ($router) 
 
     Route::post('/{comment:id}/bookmark', [CommentController::class, 'bookmark']);
     Route::post('/{comment:id}/unbookmark', [CommentController::class, 'unbookmark']);
+
+    Route::post('/{comment:id}/vote/up', [CommentController::class, 'upvote']);
+    // Route::post('/{comment:id}/vote/down', [CommentController::class, 'downvote']);
+    // Route::post('/{comment:id}/vote/cancel', [CommentController::class, 'unvote']);
 });

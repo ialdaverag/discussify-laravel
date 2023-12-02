@@ -67,4 +67,12 @@ class Comment extends Model
     {
         return $this->hasMany(Bookmark::class);
     }
+
+    /**
+     * Get the votes for the comment.
+     */
+    public function votes(): BelongsToMany
+    {
+        return $this->belongsToMany(User::class, 'comment_votes')->withPivot('direction');
+    }
 }
