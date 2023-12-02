@@ -39,6 +39,8 @@ Route::group(['middleware' => 'api', 'prefix' => 'community'], function ($router
     Route::get('/{community:name}/subscribers', [CommunityController::class, 'getSubscribers']);
     Route::get('/{community:name}/moderators', [CommunityController::class, 'getModerators']);
     Route::get('/{community:name}/banned', [CommunityController::class, 'getBans']);
+
+    // Route::get('/{community:name}/posts', [CommunityController::class, 'getPosts']);
 });
 
 Route::group(['middleware' => 'api', 'prefix' => 'post'], function ($router) {
@@ -54,6 +56,11 @@ Route::group(['middleware' => 'api', 'prefix' => 'post'], function ($router) {
     Route::post('/{post:id}/vote/up', [PostController::class, 'upvote']);
     Route::post('/{post:id}/vote/down', [PostController::class, 'downvote']);
     Route::post('/{post:id}/vote/cancel', [PostController::class, 'unvote']);
+
+    // Route::get('/{post:id}/upvoters', [PostController::class, 'getUpvoters']);
+    // Route::get('/{post:id}/downvoters', [PostController::class, 'getDownvoters']);
+
+    Route::get('/{post:id}/comments', [PostController::class, 'getComments']);
 });
 
 Route::group(['middleware' => 'api', 'prefix' => 'comment'], function ($router) {
@@ -69,4 +76,7 @@ Route::group(['middleware' => 'api', 'prefix' => 'comment'], function ($router) 
     Route::post('/{comment:id}/vote/up', [CommentController::class, 'upvote']);
     Route::post('/{comment:id}/vote/down', [CommentController::class, 'downvote']);
     Route::post('/{comment:id}/vote/cancel', [CommentController::class, 'unvote']);
+
+    // Route::get('/{comment:id}/upvoters', [CommentController::class, 'getUpvoters']);
+    // Route::get('/{comment:id}/downvoters', [CommentController::class, 'getDownvoters']);
 });

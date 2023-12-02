@@ -175,4 +175,12 @@ class PostController extends Controller
 
         return response()->json(null, 204);
     }
+
+    /**
+     * Get comments of the specified resource from storage.
+     */
+    public function getComments(Post $post)
+    {
+        return response()->json($post->comments()->get(), 200);
+    }
 }
