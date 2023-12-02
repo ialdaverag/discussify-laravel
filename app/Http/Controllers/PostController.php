@@ -182,8 +182,18 @@ class PostController extends Controller
     public function getUpvoters(Post $post)
     {
         $upvoters = $post->votes()->wherePivot('direction', 1)->get();
-        
+
         return response()->json($upvoters, 200);
+    }
+
+    /**
+     * Get downvoters of the specified resource from storage.
+     */
+    public function getDownvoters(Post $post)
+    {
+        $downvoters = $post->votes()->wherePivot('direction', -1)->get();
+
+        return response()->json($downvoters, 200);
     }
 
     /**
