@@ -171,4 +171,22 @@ class CommentController extends Controller
 
         return response()->json(null, 204);
     }
+
+    /**
+     * Remove the specified resource from storage.
+     */
+    public function unvote(Comment $comment)
+    {
+        $user = auth()->user();
+
+        $existingVote = $user->commentVotes()->where('comment_votes.comment_id', $comment->id)->first();
+
+        if (!$existingVote) {
+            return response()->json(['error' => 'Comment is not voted'], 409);
+        }
+
+        $user->commentVotes()->detach($comment);
+
+        return response()->json(null, 204);
+    }
 }
