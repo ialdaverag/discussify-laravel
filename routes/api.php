@@ -7,6 +7,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\CommunityController;
 use App\Http\Controllers\PostController;
+use App\Http\Controllers\CommentController;
 
 Route::group(['middleware' => 'api', 'prefix' => 'auth'], function ($router) {
     Route::post('signup', [AuthController::class, 'signup']);
@@ -53,4 +54,12 @@ Route::group(['middleware' => 'api', 'prefix' => 'post'], function ($router) {
     Route::post('/{post:id}/vote/up', [PostController::class, 'upvote']);
     Route::post('/{post:id}/vote/down', [PostController::class, 'downvote']);
     Route::post('/{post:id}/vote/cancel', [PostController::class, 'unvote']);
+});
+
+Route::group(['middleware' => 'api', 'prefix' => 'comment'], function ($router) {
+    Route::post('/', [CommentController::class, 'store']);
+    // Route::get('/', [CommentController::class, 'index']);
+    // Route::get('/{comment:id}', [CommentController::class, 'show']);
+    // Route::patch('/{comment:id}', [CommentController::class, 'update']);
+    // Route::delete('/{comment:id}', [CommentController::class, 'destroy']);
 });

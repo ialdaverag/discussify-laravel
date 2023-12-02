@@ -15,6 +15,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 use App\Models\Community;
 use App\Models\Post;
+use App\Models\Comment;
 
 class User extends Authenticatable implements JWTSubject
 {
@@ -103,6 +104,14 @@ class User extends Authenticatable implements JWTSubject
     public function votes(): BelongsToMany
     {
         return $this->belongsToMany(Post::class, 'post_votes')->withPivot('direction');
+    }
+
+    /**
+     * Get the comments of the user.
+     */
+    public function comments(): HasMany
+    {
+        return $this->hasMany(Comment::class);
     }
 
     /**
