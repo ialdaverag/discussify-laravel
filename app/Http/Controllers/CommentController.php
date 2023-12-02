@@ -189,4 +189,14 @@ class CommentController extends Controller
 
         return response()->json(null, 204);
     }
+
+    /**
+     * Get the upvoters of the specified resource from storage.
+     */
+    public function getUpvoters(Comment $comment)
+    {
+        $upvoters = $comment->votes()->wherePivot('direction', 1)->get();
+        
+        return response()->json($upvoters, 200);
+    }
 }
