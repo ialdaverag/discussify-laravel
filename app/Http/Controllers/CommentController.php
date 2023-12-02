@@ -146,4 +146,29 @@ class CommentController extends Controller
 
         return response()->json(null, 204);
     }
+
+    /**
+     * Downvote the specified resource from storage.
+     */
+    public function downvote(Comment $comment)
+    {
+        $user = auth()->user();
+
+        $existingVote = $user->commentVotes()->where('comment_votes.comment_id', $comment->id)->first();
+
+        if ($existingVote) {
+            if ($existingVote->pivot->direction === -1) {
+                return response()->json(['error' => 'Comment already downvoted'], 409);
+            } else {
+                $existingVote->pivot->direction = -1;
+                $existingVote->pivot->save();
+
+                return response()->json(null, 204);
+            }
+        }
+
+        $user->commentVotes()->attach($comment, ['direction' => -1]);
+
+        return response()->json(null, 204);
+    }
 }
