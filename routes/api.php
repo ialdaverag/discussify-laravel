@@ -57,7 +57,7 @@ Route::group(['middleware' => 'api', 'prefix' => 'post'], function ($router) {
     Route::post('/{post:id}/vote/down', [PostController::class, 'downvote']);
     Route::post('/{post:id}/vote/cancel', [PostController::class, 'unvote']);
 
-    // Route::get('/{post:id}/upvoters', [PostController::class, 'getUpvoters']);
+    Route::get('/{post:id}/upvoters', [PostController::class, 'getUpvoters']);
     // Route::get('/{post:id}/downvoters', [PostController::class, 'getDownvoters']);
 
     Route::get('/{post:id}/comments', [PostController::class, 'getComments']);

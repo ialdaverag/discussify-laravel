@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Feature;
+namespace Tests\Unit\Post;
 
 use App\Models\Post;
 use App\Models\User;
@@ -22,5 +22,15 @@ class GetCommentsTest extends TestCase
 
         $response->assertStatus(200);
         $response->assertJsonCount(3);
+    }
+
+    public function test_get_comments_for_non_existing_post()
+    {
+        $user = User::factory()->create();
+        $nonExistingPostId = 123456; // Use an ID that doesn't exist in your database
+
+        $response = $this->actingAs($user)->getJson("/api/post/{$nonExistingPostId}/comments");
+
+        $response->assertStatus(404);
     }
 }

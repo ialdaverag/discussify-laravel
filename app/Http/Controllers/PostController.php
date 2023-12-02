@@ -177,6 +177,16 @@ class PostController extends Controller
     }
 
     /**
+     * Get upvoters of the specified resource from storage.
+     */
+    public function getUpvoters(Post $post)
+    {
+        $upvoters = $post->votes()->wherePivot('direction', 1)->get();
+        
+        return response()->json($upvoters, 200);
+    }
+
+    /**
      * Get comments of the specified resource from storage.
      */
     public function getComments(Post $post)
