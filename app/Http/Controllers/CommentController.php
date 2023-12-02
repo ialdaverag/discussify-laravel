@@ -81,6 +81,12 @@ class CommentController extends Controller
      */
     public function destroy(Comment $comment)
     {
-        //
+        if (Gate::denies('delete-comment', $comment)) {
+            return response()->json(['error' => 'Unauthorized'], 403);
+        }
+
+        $comment->delete();
+
+        return response()->json(null, 204);
     }
 }
