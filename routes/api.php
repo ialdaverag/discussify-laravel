@@ -40,7 +40,7 @@ Route::group(['middleware' => 'api', 'prefix' => 'community'], function ($router
     Route::get('/{community:name}/moderators', [CommunityController::class, 'getModerators']);
     Route::get('/{community:name}/banned', [CommunityController::class, 'getBans']);
 
-    // Route::get('/{community:name}/posts', [CommunityController::class, 'getPosts']);
+    Route::get('/{community:name}/posts', [CommunityController::class, 'getPosts']);
 });
 
 Route::group(['middleware' => 'api', 'prefix' => 'post'], function ($router) {

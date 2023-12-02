@@ -285,4 +285,12 @@ class CommunityController extends Controller
     {
         return $community->bans;
     }
+
+    /**
+     * Get the posts of the specified community.
+     */
+    public function getPosts(Community $community)
+    {
+        return $community->posts;
+    }
 }
