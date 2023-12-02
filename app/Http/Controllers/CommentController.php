@@ -25,7 +25,7 @@ class CommentController extends Controller
      */
     public function index()
     {
-        //
+        return CommentResource::collection(Comment::all());
     }
 
     /**
