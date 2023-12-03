@@ -44,11 +44,16 @@ class UserController extends Controller
                 'message' => 'You cannot unfollow yourself.'
             ], 422);
         }
-        
+
         $user->followers()->detach(auth()->user()->id);
 
         return response()->json([
             'message' => 'Successfully unfollowed user.'
         ], 204);
+    }
+
+    public function getFollowers(User $user)
+    {
+        return $user->followers;
     }
 }
