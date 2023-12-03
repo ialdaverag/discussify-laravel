@@ -21,4 +21,19 @@ class UserController extends Controller
     {
         return $user;
     }
+
+    public function follow(User $user)
+    {
+        if ($user->id === auth()->user()->id) {
+            return response()->json([
+                'message' => 'You cannot follow yourself.'
+            ], 422);
+        }
+        
+        $user->followers()->attach(auth()->user()->id);
+
+        return response()->json([
+            'message' => 'Successfully followed user.'
+        ], 204);
+    }
 }
