@@ -104,6 +104,15 @@ class UserController extends Controller
         return response()->json($downvotedPosts, 200);
     }
 
+    public function getBookmarkedComments()
+    {
+        $user = auth()->user();
+
+        $bookmarkedComments = $user->commentBookmarks()->get();
+
+        return response()->json($bookmarkedComments, 200);
+    }
+
     public function getUpvotedComments()
     {
         $user = auth()->user();
