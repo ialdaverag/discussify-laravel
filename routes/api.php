@@ -34,7 +34,7 @@ Route::group(['middleware' => 'api', 'prefix' => 'user'], function ($router) {
     Route::get('/posts/downvoted ', [UserController::class, 'getDownvotedPosts']);
 
     Route::get('/comments/upvoted ', [UserController::class, 'getUpvotedComments']);
-    // Route::get('/comments/downvoted ', [UserController::class, 'getDownvotedComments']);
+    Route::get('/comments/downvoted ', [UserController::class, 'getDownvotedComments']);
 });
 
 Route::group(['middleware' => 'api', 'prefix' => 'community'], function ($router) {

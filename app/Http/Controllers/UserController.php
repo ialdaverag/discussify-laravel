@@ -103,4 +103,13 @@ class UserController extends Controller
 
         return response()->json($upvotedComments, 200);
     }
+
+    public function getDownvotedComments()
+    {
+        $user = auth()->user();
+
+        $downvotedComments = $user->commentVotes()->wherePivot('direction', -1)->get();
+
+        return response()->json($downvotedComments, 200);
+    }
 }
