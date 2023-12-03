@@ -56,4 +56,9 @@ class UserController extends Controller
     {
         return $user->followers;
     }
+
+    public function getFollowing(User $user)
+    {
+        return $user->following;
+    }
 }
