@@ -76,6 +76,15 @@ class UserController extends Controller
     {
         return $user->comments;
     }
+
+    public function getBookmarkedPosts()
+    {
+        $user = auth()->user();
+
+        $bookmarkedPosts = $user->bookmarks()->get();
+
+        return response()->json($bookmarkedPosts, 200);
+    }
         
     public function getUpvotedPosts()
     {

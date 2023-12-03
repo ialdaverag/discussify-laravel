@@ -30,9 +30,11 @@ Route::group(['middleware' => 'api', 'prefix' => 'user'], function ($router) {
     Route::get('/{user:username}/posts', [UserController::class, 'getPosts']);
     Route::get('/{user:username}/comments', [UserController::class, 'getComments']);
 
+    Route::get('/posts/bookmarked ', [UserController::class, 'getBookmarkedPosts']);
     Route::get('/posts/upvoted ', [UserController::class, 'getUpvotedPosts']);
     Route::get('/posts/downvoted ', [UserController::class, 'getDownvotedPosts']);
 
+    // Route::get('/comments/bookmarked ', [UserController::class, 'getBookmarkedComments']);
     Route::get('/comments/upvoted ', [UserController::class, 'getUpvotedComments']);
     Route::get('/comments/downvoted ', [UserController::class, 'getDownvotedComments']);
 });
