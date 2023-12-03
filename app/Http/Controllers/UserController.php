@@ -76,4 +76,11 @@ class UserController extends Controller
     {
         return $user->comments;
     }
+        
+    public function getUpvotedPosts(User $user)
+    {
+        $upvotedPosts = $user->votes()->wherePivot('direction', 1)->get();
+        
+        return response()->json($upvotedPosts, 200);
+    }
 }

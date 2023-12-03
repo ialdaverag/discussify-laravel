@@ -29,6 +29,8 @@ Route::group(['middleware' => 'api', 'prefix' => 'user'], function ($router) {
     Route::get('/{user:username}/subscriptions', [UserController::class, 'getSubscriptions']);
     Route::get('/{user:username}/posts', [UserController::class, 'getPosts']);
     Route::get('/{user:username}/comments', [UserController::class, 'getComments']);
+
+    Route::get('/posts/upvoted ', [UserController::class, 'getUpvotedPosts']);
 });
 
 Route::group(['middleware' => 'api', 'prefix' => 'community'], function ($router) {
