@@ -66,4 +66,9 @@ class UserController extends Controller
     {
         return $user->subscriptions;
     }
+
+    public function getPosts(User $user)
+    {
+        return $user->posts;
+    }
 }
