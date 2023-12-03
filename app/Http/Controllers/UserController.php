@@ -29,11 +29,26 @@ class UserController extends Controller
                 'message' => 'You cannot follow yourself.'
             ], 422);
         }
-        
+
         $user->followers()->attach(auth()->user()->id);
 
         return response()->json([
             'message' => 'Successfully followed user.'
+        ], 204);
+    }
+
+    public function unfollow(User $user)
+    {
+        if ($user->id === auth()->user()->id) {
+            return response()->json([
+                'message' => 'You cannot unfollow yourself.'
+            ], 422);
+        }
+        
+        $user->followers()->detach(auth()->user()->id);
+
+        return response()->json([
+            'message' => 'Successfully unfollowed user.'
         ], 204);
     }
 }

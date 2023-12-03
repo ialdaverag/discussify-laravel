@@ -22,7 +22,7 @@ Route::group(['middleware' => 'api', 'prefix' => 'user'], function ($router) {
     Route::get('/{user:username}', [UserController::class, 'show']);
 
     Route::post('/{user:username}/follow', [UserController::class, 'follow']);
-    // Route::post('/{user:username}/unfollow', [UserController::class, 'unfollow']);
+    Route::post('/{user:username}/unfollow', [UserController::class, 'unfollow']);
 });
 
 Route::group(['middleware' => 'api', 'prefix' => 'community'], function ($router) {
