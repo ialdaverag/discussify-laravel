@@ -71,4 +71,9 @@ class UserController extends Controller
     {
         return $user->posts;
     }
+
+    public function getComments(User $user)
+    {
+        return $user->comments;
+    }
 }
