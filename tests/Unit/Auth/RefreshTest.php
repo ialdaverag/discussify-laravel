@@ -13,20 +13,26 @@ class RefreshTest extends TestCase
 
     use RefreshDatabase;
 
+    /**
+     * Test refresh token successfully.
+     *
+     * @return void
+     */
     public function test_refresh_token_successfully(): void
     {
-        $password = 'Password1234.';
+        $password = 'Password123.';
+
         User::factory()->create([
             'username' => 'testuser',
             'password' => bcrypt($password), 
         ]);
 
-        $loginData = [
+        $data = [
             'username' => 'testuser',
             'password' => $password,
         ];
 
-        $loginResponse = $this->postJson($this->loginRoute, $loginData);
+        $loginResponse = $this->postJson($this->loginRoute, $data);
         $token = $loginResponse->json('access_token');
 
         $response = $this->withHeaders([

@@ -13,20 +13,26 @@ class MeTest extends TestCase
     
     use RefreshDatabase;
 
+    /**
+     * Test me returns user details.
+     *
+     * @return void
+     */
     public function test_me_returns_user_details(): void
     {
-        $password = 'Password1234.';
+        $password = 'Password123.';
+
         $user = User::factory()->create([
             'username' => 'testuser',
             'password' => bcrypt($password), 
         ]);
 
-        $loginData = [
+        $data = [
             'username' => 'testuser',
             'password' => $password,
         ];
 
-        $loginResponse = $this->postJson($this->loginRoute, $loginData);
+        $loginResponse = $this->postJson($this->loginRoute, $data);
         $token = $loginResponse->json('access_token');
 
         $response = $this->withHeaders([
@@ -35,7 +41,9 @@ class MeTest extends TestCase
         $response
             ->assertStatus(200)
             ->assertJson([
+                'id' => $user->id,
                 'username' => $user->username,
+                'email' => $user->email,
             ]);
     }
 }

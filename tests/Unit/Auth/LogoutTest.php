@@ -13,26 +13,36 @@ class LogoutTest extends TestCase
     private $loginRoute = '/api/auth/login';
     private $logoutRoute = '/api/auth/logout';
 
+    /**
+     * Test logout successfully.
+     *
+     * @return void
+     */
     public function test_logout_successfully(): void
     {
-        $password = 'Password1234.';
+        $password = 'Password123.';
+
         User::factory()->create([
             'username' => 'testuser',
             'password' => bcrypt($password), 
         ]);
 
-        $loginData = [
+        $data = [
             'username' => 'testuser',
             'password' => $password,
         ];
 
-        $loginResponse = $this->postJson($this->loginRoute, $loginData);
+        $loginResponse = $this->postJson($this->loginRoute, $data);
         $token = $loginResponse->json('access_token');
 
         $response = $this->withHeaders([
             'Authorization' => 'Bearer '.$token,
         ])->postJson($this->logoutRoute);
 
-        $response->assertStatus(200);
+        $response
+            ->assertStatus(200)
+            ->assertJson([
+                'message' => 'Successfully logged out.',
+            ]);
     }
 }

@@ -14,18 +14,21 @@ class SignupTest extends TestCase
     use RefreshDatabase;
     
     /**
-     * A basic unit test example.
+     * Test signup successfully.
+     *
+     * @return void
      */
     public function test_signup_successfully(): void
     {
         $data = [
             'username' => 'testuser',
             'email' => 'test@example.com',
-            'password' => 'Password1234.'
+            'password' => 'Password123.'
         ];
     
         $response = $this->postJson($this->route, $data);
-        $response->assertStatus(201)
+        $response
+            ->assertStatus(201)
             ->assertJsonStructure([
                 'id',
                 'username',
@@ -35,30 +38,47 @@ class SignupTest extends TestCase
             ]);
     }
 
+    /**
+     * Test signup fails without username.
+     *
+     * @return void
+     */
     public function test_signup_fails_without_username(): void
     {
         $invalidUserData = [
             'email' => 'test@example.com',
-            'password' => 'Password1234.',
+            'password' => 'Password123.',
         ];
 
         $response = $this->postJson($this->route, $invalidUserData);
-        $response->assertStatus(422)
+        $response
+            ->assertStatus(422)
             ->assertJsonValidationErrors(['username']);
     }
 
+    /**
+     * Test signup fails without email.
+     *
+     * @return void
+     */
     public function test_signup_fails_without_email(): void
     {
         $invalidUserData = [
             'username' => 'testuser',
-            'password' => 'Password1234.',
+            'password' => 'Password123.',
         ];
 
         $response = $this->postJson($this->route, $invalidUserData);
-        $response->assertStatus(422)
+        $response
+            ->assertStatus(422)
             ->assertJsonValidationErrors(['email']);
     }
 
+    /**
+     * Test signup fails without password.
+     *
+     * @return void
+     */
     public function test_signup_fails_without_password(): void
     {
         $invalidUserData = [
@@ -67,23 +87,35 @@ class SignupTest extends TestCase
         ];
 
         $response = $this->postJson($this->route, $invalidUserData);
-        $response->assertStatus(422)
+        $response
+            ->assertStatus(422)
             ->assertJsonValidationErrors(['password']);
     }
 
+    /**
+     * Test signup fails with invalid username.
+     *
+     * @return void
+     */
     public function test_signup_fails_with_invalid_username(): void
     {
         $invalidUserData = [
             'username' => 'te',
             'email' => 'testuser@test.com',
-            'password' => 'Password1234.',
+            'password' => 'Password123.',
         ];
     
         $response = $this->postJson($this->route, $invalidUserData);
-        $response->assertStatus(422)
+        $response
+            ->assertStatus(422)
             ->assertJsonValidationErrors(['username']);
     }
 
+    /**
+     * Test signup fails with invalid email.
+     *
+     * @return void
+     */
     public function test_signup_fails_with_invalid_email(): void
     {
         $invalidUserData = [
@@ -93,10 +125,16 @@ class SignupTest extends TestCase
         ];
 
         $response = $this->postJson($this->route, $invalidUserData);
-        $response->assertStatus(422)
+        $response
+            ->assertStatus(422)
             ->assertJsonValidationErrors(['email']);
     }
 
+    /**
+     * Test signup fails with invalid password.
+     *
+     * @return void
+     */
     public function test_signup_fails_with_invalid_password(): void
     {
         $invalidUserData = [
@@ -106,10 +144,16 @@ class SignupTest extends TestCase
         ];
     
         $response = $this->postJson($this->route, $invalidUserData);
-        $response->assertStatus(422)
+        $response
+            ->assertStatus(422)
             ->assertJsonValidationErrors(['password']);
     }
 
+    /**
+     * Test signup fails with password that does not contain a number.
+     *
+     * @return void
+     */
     public function test_signup_fails_with_duplicate_username(): void
     {
         User::factory()->create(['username' => 'testuser']); 
@@ -117,14 +161,20 @@ class SignupTest extends TestCase
         $duplicateUserData = [
             'username' => 'testuser',
             'email' => 'newuser@test.com',
-            'password' => 'Password1234.',
+            'password' => 'Password123.',
         ];
 
         $response = $this->postJson($this->route, $duplicateUserData);
-        $response->assertStatus(422)
+        $response
+            ->assertStatus(422)
             ->assertJsonValidationErrors(['username']);
     }
 
+    /**
+     * Test signup fails with duplicate email.
+     *
+     * @return void
+     */
     public function test_signup_fails_with_duplicate_email(): void
     {
         User::factory()->create(['email' => 'testuser@test.com']); 
@@ -132,11 +182,12 @@ class SignupTest extends TestCase
         $duplicateUserData = [
             'username' => 'newuser',
             'email' => 'testuser@test.com',
-            'password' => 'Password1234.',
+            'password' => 'Password123.',
         ];
 
         $response = $this->postJson($this->route, $duplicateUserData);
-        $response->assertStatus(422)
+        $response
+            ->assertStatus(422)
             ->assertJsonValidationErrors(['email']);
     }
 }
