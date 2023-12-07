@@ -11,28 +11,37 @@ use Tests\TestCase;
 
 class GetPostsTest extends TestCase
 {
+    private $route = '/api/community/%s/posts';
+
     use RefreshDatabase;
 
     public function test_get_posts_successfully()
     {
-        $user = User::factory()->create();
+        // Create a community
         $community = Community::factory()->create();
+
+        // Create a post
         $post = Post::factory()->create();
 
+        // Attach the post to the community
         $community->posts()->save($post);
 
-        $response = $this->actingAs($user)->getJson("/api/community/{$community->name}/posts");
+        // Send a GET request to /api/community/{community}/posts
+        $response = $this->getJson(sprintf($this->route, $community->name));
 
+        // Assert that the response has status code 200
         $response->assertStatus(200);
     }
 
     public function test_get_posts_for_non_existing_community()
     {
-        $user = User::factory()->create();
-        $nonExistingCommunityName = 'non-existing-community';
+        // Name of a non-existing community
+        $name = 'nonexisting';
 
-        $response = $this->actingAs($user)->getJson("/api/community/{$nonExistingCommunityName}/posts");
+        // Send a GET request to /api/community/{community}/posts
+        $response = $this->getJson(sprintf($this->route, $name));
 
+        // Assert that the response has status code 404
         $response->assertStatus(404);
     }
 }

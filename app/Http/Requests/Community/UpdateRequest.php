@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Requests;
+namespace App\Http\Requests\Community;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class CommunityStoreRequest extends FormRequest
+class UpdateRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -22,7 +22,7 @@ class CommunityStoreRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => 'required|string|min:3|max:20|unique:communities|regex:/^[a-zA-Z0-9_]*$/',
+            'name' => 'sometimes|string|min:3|max:20|unique:communities|regex:/^[a-zA-Z0-9_]*$/',
             'about' => 'sometimes|string|max:1023',
         ];
     }

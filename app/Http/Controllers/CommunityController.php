@@ -2,16 +2,17 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 
 use App\Models\User;
 use App\Models\Community;
-
-use Illuminate\Http\Request;
-
-use App\Http\Requests\CommunityStoreRequest;
-use App\Http\Requests\CommunityUpdateRequest;
+use App\Http\Requests\Community\StoreRequest;
+use App\Http\Requests\Community\UpdateRequest;
+use App\Http\Resources\UserCollection;
 use App\Http\Resources\CommunityResource;
+use App\Http\Resources\CommunityCollection;
+use App\Http\Resources\PostCollection;
 
 class CommunityController extends Controller
 {
@@ -22,46 +23,73 @@ class CommunityController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('auth:api', ['except' => ['index', 'show']]);
+        $this->middleware('auth:api', 
+            ['except' => [
+                'index', 
+                'show', 
+                'getSubscribers', 
+                'getModerators', 
+                'getBans', 
+                'getPosts'
+                ]
+            ]
+        );
     }
 
     /**
      * Display a listing of the resource.
+     * 
+     * @return \Illuminate\Http\Response
      */
     public function index()
     {
-        return Community::all();
+        return response()->json(new CommunityCollection(Community::all()));
     }
 
     /**
      * Store a newly created resource in storage.
+     * 
+     * @param  \App\Http\Requests\Community\StoreRequest  $request
+     * 
+     * @return \Illuminate\Http\Response
      */
-    public function store(CommunityStoreRequest $request)
+    public function store(StoreRequest $request)
     {
         $community = auth()->user()->communities()->create($request->validated());
-        
-        $community->moderators()->attach(auth()->id());
+
         $community->subscribers()->attach(auth()->id());
+        $community->moderators()->attach(auth()->id());
 
         return response()->json(new CommunityResource($community), 201);
     }
 
     /**
      * Display the specified resource.
+     * 
+     * @param  \App\Models\Community  $community
+     * 
+     * @return \Illuminate\Http\Response
      */
     public function show(Community $community)
     {
-        return $community;
+        return response()->json(new CommunityResource($community), 200);
     }
 
     /**
      * Update the specified resource in storage.
+     * 
+     * @param  \App\Http\Requests\Community\UpdateRequest  $request
+     * @param  \App\Models\Community  $community
+     * 
+     * @return \Illuminate\Http\Response
      */
-    public function update(CommunityUpdateRequest $request, Community $community)
+    public function update(UpdateRequest $request, Community $community)
     {
-        if (Gate::denies('update-community', $community)) {
-            return response()->json(['error' => 'Unauthorized'], 403);
-        }
+        $response = Gate::inspect('update', $community);
+
+        if ($response->denied()) {
+            return response()->json(['error' => $response->message()], 403);
+        } 
 
         $community->update($request->validated());
 
@@ -70,15 +98,21 @@ class CommunityController extends Controller
 
     /**
      * Remove the specified resource from storage.
+     * 
+     * @param  \App\Models\Community  $community
+     * 
+     * @return \Illuminate\Http\Response
      */
     public function destroy(Community $community)
     {
-        if (Gate::denies('delete-community', $community)) {
-            return response()->json(['error' => 'Unauthorized'], 403);
+        $response = Gate::inspect('delete', $community);
+
+        if ($response->denied()) {
+            return response()->json(['error' => $response->message()], 403);
         }
 
-        $community->moderators()->detach();
-        $community->subscribers()->detach();
+        // $community->moderators()->detach();
+        // $community->subscribers()->detach();
     
         $community->delete();
     
@@ -87,6 +121,10 @@ class CommunityController extends Controller
 
     /**
      * Subscribe to the specified community.
+     * 
+     * @param  \App\Models\Community  $community
+     * 
+     * @return \Illuminate\Http\Response
      */
     public function subscribe(Community $community)
     {
@@ -94,11 +132,12 @@ class CommunityController extends Controller
 
         // Check if the user is banned from the community
         if ($user->isBannedFrom($community)) {
-            return response()->json(['error' => 'User is banned from the community'], 400);
+            return response()->json(['error' => 'You are banned from this community.'], 400);
         }
 
+        // Check if the user is already subscribed to the community
         if ($user->isSubscribedTo($community)) {
-            return response()->json(['error' => 'User is already subscribed to the community'], 400);
+            return response()->json(['error' => 'You are already subscribed to this community.'], 409);
         }
 
         $user->subscriptions()->attach($community->id);
@@ -108,6 +147,10 @@ class CommunityController extends Controller
 
     /**
      * Unsubscribe from the specified community.
+     * 
+     * @param  \App\Models\Community  $community
+     * 
+     * @return \Illuminate\Http\Response
      */
     public function unsubscribe(Community $community)
     {
@@ -137,8 +180,10 @@ class CommunityController extends Controller
         // Check if the user exists
         $user = User::where('username', $user)->firstOrFail();
 
-        if (Gate::denies('add-moderator', $community)) {
-            return response()->json(['error' => 'Unauthorized'], 403);
+        $response = Gate::inspect('addModerator', $community);
+
+        if ($response->denied()) {
+            return response()->json(['error' => $response->message()], 403);
         }
 
         // Check if the user is banned from the community
@@ -153,7 +198,7 @@ class CommunityController extends Controller
 
         // Check if the user is already a moderator of the community
         if ($user->isModeratorOf($community)) {
-            return response()->json(['error' => 'User is already a moderator of the community'], 400);
+            return response()->json(['error' => 'User is already a moderator of the community'], 409);
         }
 
         // Add the user as a moderator of the community
@@ -173,8 +218,16 @@ class CommunityController extends Controller
         // Check if the user exists
         $user = User::where('username', $user)->firstOrFail();
 
-        if (Gate::denies('remove-moderator', $community)) {
-            return response()->json(['error' => 'Unauthorized'], 403);
+        // Check if the user is the owner of the community
+        $response = Gate::inspect('removeModerator', $community);
+
+        if ($response->denied()) {
+            return response()->json(['error' => $response->message()], 403);
+        }
+
+        // Check if the user is the owner of the community
+        if ($user->id === $community->owner_id) {
+            return response()->json(['error' => 'User is the owner of the community'], 400);
         }
 
         // Check if the user is a moderator of the community
@@ -200,12 +253,14 @@ class CommunityController extends Controller
         $user = User::where('username', $user)->firstOrFail();
 
         // Check if the user is a moderator of the community
-        if (Gate::denies('ban-user', $community)) {
-            return response()->json(['error' => 'Unauthorized'], 403);
+        $response = Gate::inspect('banUser', $community);
+
+        if ($response->denied()) {
+            return response()->json(['error' => $response->message()], 403);
         }
 
         // Check if the user is already banned from the community
-        if ($user->bans()->where('community_id', $community->id)->exists()) {
+        if ($user->isBannedFrom($community)) {
             return response()->json(['error' => 'User is already banned from the community'], 400);
         }
 
@@ -224,7 +279,7 @@ class CommunityController extends Controller
             return response()->json(['error' => 'User cannot ban the owner of the community'], 400);
         }
 
-        // Remove moderator privileges from the user
+        // Remove moderator privileges from the user if they are a moderator of the community
         if ($user->isModeratorOf($community)) {
             $community->moderators()->detach($user->id);
         }
@@ -247,8 +302,10 @@ class CommunityController extends Controller
         $user = User::where('username', $user)->firstOrFail();
 
         // Check if the user is a moderator of the community
-        if (Gate::denies('unban-user', $community)) {
-            return response()->json(['error' => 'Unauthorized'], 403);
+        $response = Gate::inspect('unbanUser', $community);
+
+        if ($response->denied()) {
+            return response()->json(['error' => $response->message()], 403);
         }
 
         // Check if the user is banned from the community
@@ -267,7 +324,7 @@ class CommunityController extends Controller
      */
     public function getSubscribers(Community $community)
     {
-        return $community->subscribers;
+        return response()->json(new UserCollection($community->subscribers));
     }
 
     /**
@@ -275,7 +332,7 @@ class CommunityController extends Controller
      */
     public function getModerators(Community $community)
     {
-        return $community->moderators;
+        return response()->json(new UserCollection($community->moderators));
     }
 
     /**
@@ -283,7 +340,7 @@ class CommunityController extends Controller
      */
     public function getBans(Community $community)
     {
-        return $community->bans;
+        return response()->json(new UserCollection($community->bans));
     }
 
     /**
@@ -291,6 +348,6 @@ class CommunityController extends Controller
      */
     public function getPosts(Community $community)
     {
-        return $community->posts;
+        return response()->json(new PostCollection($community->posts));
     }
 }

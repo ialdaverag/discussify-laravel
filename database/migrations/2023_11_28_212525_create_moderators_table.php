@@ -16,7 +16,7 @@ return new class extends Migration
     {
         Schema::create('moderators', function (Blueprint $table) {
             $table->foreignIdFor(User::class)->constrained();
-            $table->foreignIdFor(Community::class)->constrained();
+            $table->foreignIdFor(Community::class)->constrained()->onDelete('cascade');
         });
     }
 

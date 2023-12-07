@@ -55,14 +55,12 @@ class RemoveModeratorTest extends TestCase
         $response->assertStatus(403);
     }
 
-    public function test_user_not_subscribed_to_community()
+    public function test_user_is_the_owner_of_community()
     {
         $owner = User::factory()->create();
         $community = Community::factory()->create(['user_id' => $owner->id]);
 
-        $user = User::factory()->create();
-
-        $response = $this->actingAs($owner)->postJson(sprintf($this->route, $community->name, $user->username));
+        $response = $this->actingAs($owner)->postJson(sprintf($this->route, $community->name, $owner->username));
         $response->assertStatus(400);
     }
 

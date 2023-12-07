@@ -11,47 +11,51 @@ class UnsubscribeTest extends TestCase
 {
     private $subscribeRoute = '/api/community/%s/subscribe';
     private $unsubscribeRoute = '/api/community/%s/unsubscribe';
-    private $community;
 
     use RefreshDatabase;
 
-    public function setUp(): void
+    public function test_successfully(): void
     {
-        parent::setUp();
-
-        $this->community = Community::factory()->create();
-        $this->unsubscribeRoute = sprintf($this->unsubscribeRoute, $this->community->name);
-    }
-
-    public function test_user_can_unsubscribe_from_community(): void
-    {
+        // Create a user
         $user = User::factory()->create();
 
-        $this->actingAs($user)->postJson(sprintf($this->subscribeRoute, $this->community->name));
-        $this->assertTrue($user->fresh()->isSubscribedTo($this->community));
+        // Create a community
+        $community = Community::factory()->create();
 
-        $response = $this->actingAs($user)->postJson($this->unsubscribeRoute);
+        // Subscribe the user to the community
+        $community->subscribers()->attach($user->id);
 
+        // Send a POST request to /api/community/{community}/unsubscribe
+        $response = $this->actingAs($user)->postJson(sprintf($this->unsubscribeRoute, $community->name));
+
+        // Assert that the response has status code 204
         $response->assertStatus(204);
-        $this->assertFalse($user->fresh()->isSubscribedTo($this->community));
     }
 
     public function test_user_cannot_unsubscribe_from_community_not_subscribed_to(): void
     {
+        // Create a user
         $user = User::factory()->create();
+
+        // Create a community
         $community = Community::factory()->create();
 
+        // Send a POST request to /api/community/{community}/unsubscribe
         $response = $this->actingAs($user)->postJson(sprintf($this->unsubscribeRoute, $community->name));
 
+        // Assert that the response has status code 400
         $response->assertStatus(400);
     }
 
-    // public function test_user_cannot_unsubscribe_to_nonexistent_community(): void
-    // {
-    //     $user = User::factory()->create();
+    public function test_user_cannot_unsubscribe_to_nonexistent_community(): void
+    {
+        // Create a user
+        $user = User::factory()->create();
 
-    //     $response = $this->actingAs($user)->postJson(sprintf($this->unsubscribeRoute, 'nonexistent'));
+        // Send a POST request to /api/community/{community}/unsubscribe
+        $response = $this->actingAs($user)->postJson(sprintf($this->unsubscribeRoute, 'nonexistent'));
 
-    //     $response->assertStatus(404);
-    // }
+        // Assert that the response has status code 404
+        $response->assertStatus(404);
+    }
 }

@@ -16,6 +16,8 @@ class CommunityFactory extends Factory
             'name' => $this->faker->unique()->name,
             'about' => $this->faker->sentence,
             'user_id' => User::factory(),
+            'created_at' => now(),
+            'updated_at' => now(),
         ];
     }
 }

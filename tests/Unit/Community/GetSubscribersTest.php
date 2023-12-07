@@ -16,22 +16,31 @@ class GetSubscribersTest extends TestCase
 
     public function test_get_subscribers_successfully()
     {
-        $owner = User::factory()->create();
-        $community = Community::factory()->create(['user_id' => $owner->id]);
+        // Create a community
+        $community = Community::factory()->create();
 
+        // Create 3 subscribers
         $subscribers = User::factory()->count(3)->create();
 
+        // Attach the subscribers to the community
         $community->subscribers()->attach($subscribers->pluck('id'));
 
-        $response = $this->actingAs($owner)->getJson(sprintf($this->route, $community->name));
+        // Send a GET request to /api/community/{community}/subscribers
+        $response = $this->getJson(sprintf($this->route, $community->name));
+
+        // Assert that the response has status code 200
         $response->assertStatus(200);
     }
 
     public function test_community_not_found()
-    {
-        $user = User::factory()->create();
+    {   
+        // Name of a non-existent community
+        $community = 'nonexistent';
 
-        $response = $this->actingAs($user)->getJson(sprintf($this->route, 'nonexistent_community'));
+        // Send a GET request to /api/community/{community}/subscribers
+        $response = $this->getJson(sprintf($this->route, $community));
+
+        // Assert that the response has status code 404
         $response->assertStatus(404);
     }
 }

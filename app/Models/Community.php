@@ -33,6 +33,11 @@ class Community extends Model
         return $this->belongsTo(User::class);
     }
 
+    public function isOwnerBy(User $user): bool
+    {
+        return $this->user_id === $user->id;
+    }
+
     /**
      * Get the subscribers of the community.
      */

@@ -17,7 +17,7 @@ return new class extends Migration
         Schema::create('posts', function (Blueprint $table) {
             $table->id();
             $table->foreignIdFor(User::class)->constrained();
-            $table->foreignIdFor(Community::class)->constrained();
+            $table->foreignIdFor(Community::class)->constrained()->onDelete('cascade');
             $table->string('title')->nullable(false);
             $table->string('content')->nullable(false);
             $table->timestamps();

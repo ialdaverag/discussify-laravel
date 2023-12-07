@@ -5,7 +5,7 @@ namespace App\Http\Resources;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\ResourceCollection;
 
-class CommunityCollection extends ResourceCollection
+class PostCollection extends ResourceCollection
 {
     /**
      * Transform the resource collection into an array.
@@ -14,8 +14,8 @@ class CommunityCollection extends ResourceCollection
      */
     public function toArray(Request $request): array
     {
-        return $this->collection->transform(function ($community) {
-            return new CommunityResource($community);
+        return $this->collection->transform(function ($post) {
+            return new PostResource($post);
         })->all();
     }
 }

@@ -147,7 +147,24 @@ class User extends Authenticatable implements JWTSubject
     }
 
     /**
+     * Check if the user is the owner of a community.
+     * 
+     * @param Community $community
+     * 
+     * @return bool
+     */
+
+    public function isOwnerOf(Community $community)
+    {
+        return $this->id === $community->user_id;
+    }
+
+    /**
      * Check if the user is subscribed to a community.
+     * 
+     * @param Community $community
+     * 
+     * @return bool
      */
     public function isSubscribedTo(Community $community)
     {
@@ -156,6 +173,10 @@ class User extends Authenticatable implements JWTSubject
 
     /**
      * Check if the user is a moderator of a community.
+     * 
+     * @param Community $community
+     * 
+     * @return bool
      */
     public function isModeratorOf(Community $community)
     {
@@ -164,6 +185,10 @@ class User extends Authenticatable implements JWTSubject
 
     /**
      * Check if the user is banned from a community.
+     * 
+     * @param Community $community
+     * 
+     * @return bool
      */
     public function isBannedFrom(Community $community)
     {
