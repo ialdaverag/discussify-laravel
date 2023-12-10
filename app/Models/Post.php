@@ -47,9 +47,9 @@ class Post extends Model
     /**
      * Get the bookmarks for the post.
      */
-    public function bookmarks(): HasMany
+    public function bookmarks(): BelongsToMany
     {
-        return $this->hasMany(Bookmark::class);
+        return $this->belongsToMany(User::class, 'post_bookmarks', 'post_id', 'user_id');
     }
 
     /**
@@ -66,5 +66,45 @@ class Post extends Model
     public function comments(): HasMany
     {
         return $this->hasMany(Comment::class);
+    }
+
+    /**
+     * Check if the post is bookmarked by the given user.
+     *
+     * @var array<int, string>
+     */
+    public function isBookmarkedBy(User $user): bool
+    {
+        return $this->bookmarks()->where('user_id', $user->id)->exists();
+    }
+
+    /**
+     * Check if the post is voted on by the given user.
+     *
+     * @var array<int, string>
+     */
+    public function isVotedOnBy(User $user): bool
+    {
+        return $this->votes()->where('user_id', $user->id)->exists();
+    }
+
+    /**
+     * Check if the post is upvoted by the given user.
+     *
+     * @var array<int, string>
+     */
+    public function isUpvotedBy(User $user): bool
+    {
+        return $this->votes()->where('user_id', $user->id)->wherePivot('direction', 1)->exists();
+    }
+
+    /**
+     * Check if the post is downvoted by the given user.
+     *
+     * @var array<int, string>
+     */
+    public function isDownvotedBy(User $user): bool
+    {
+        return $this->votes()->where('user_id', $user->id)->wherePivot('direction', -1)->exists();
     }
 }

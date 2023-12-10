@@ -14,23 +14,37 @@ class GetCommentsTest extends TestCase
 
     public function test_get_comments_successfully(): void
     {
+        // Create a user
         $user = User::factory()->create();
+
+        // Create a post
         $post = Post::factory()->create();
+
+        // Create 3 comments for the post
         $comments = Comment::factory()->count(3)->create(['post_id' => $post->id]);
 
+        // Send a GET request to /api/post/{id}/comments
         $response = $this->actingAs($user)->getJson("/api/post/{$post->id}/comments");
 
+        // Assert that the response has status code 200
         $response->assertStatus(200);
+
+        // Assert that the comments count is 3
         $response->assertJsonCount(3);
     }
 
     public function test_get_comments_for_non_existing_post()
     {
+        // Create a user
         $user = User::factory()->create();
-        $nonExistingPostId = 123456; // Use an ID that doesn't exist in your database
 
+        // ID of a post that doesn't exist
+        $nonExistingPostId = 123456; 
+
+        // Send a GET request to /api/post/{id}/comments
         $response = $this->actingAs($user)->getJson("/api/post/{$nonExistingPostId}/comments");
 
+        // Assert that the response has status code 404
         $response->assertStatus(404);
     }
 }

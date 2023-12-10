@@ -6,10 +6,13 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 
 use App\Models\Post;
-
-use App\Http\Requests\PostStoreRequest;
-use App\Http\Requests\PostUpdateRequest;
+use App\Models\Community;
+use App\Http\Requests\Post\StoreRequest;
+use App\Http\Requests\Post\UpdateRequest;
 use App\Http\Resources\PostResource;
+use App\Http\Resources\PostCollection;
+use App\Http\Resources\UserCollection;
+use App\Http\Resources\CommentCollection;
 
 class PostController extends Controller
 {
@@ -28,14 +31,23 @@ class PostController extends Controller
      */
     public function index()
     {
-        return PostResource::collection(Post::all());
+        return response()->json(new PostCollection(Post::all()));
+
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(PostStoreRequest $request)
+    public function store(StoreRequest $request)
     {
+        $community = Community::findOrFail($request->community_id);
+        
+        $response = Gate::inspect('create', [Post::class, $community]);
+
+        if ($response->denied()) {
+            return response()->json(['error' => $response->message()], 403);
+        }
+
         $post = auth()->user()->posts()->create($request->validated());
 
         return response()->json(new PostResource($post), 201);
@@ -46,16 +58,18 @@ class PostController extends Controller
      */
     public function show(Post $post)
     {
-        return new PostResource($post);
+        return response()->json(new PostResource($post), 200);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(PostUpdateRequest $request, Post $post)
+    public function update(UpdateRequest $request, Post $post)
     {
-        if (Gate::denies('update-post', $post)) {
-            return response()->json(['error' => 'Unauthorized'], 403);
+        $response = Gate::inspect('update', $post);
+
+        if ($response->denied()) {
+            return response()->json(['error' => $response->message()], 403);
         }
 
         $post->update($request->validated());
@@ -68,8 +82,10 @@ class PostController extends Controller
      */
     public function destroy(Post $post)
     {
-        if (Gate::denies('delete-post', $post)) {
-            return response()->json(['error' => 'Unauthorized'], 403);
+        $response = Gate::inspect('delete', $post);
+
+        if ($response->denied()) {
+            return response()->json(['error' => $response->message()], 403);
         }
 
         $post->delete();
@@ -84,8 +100,8 @@ class PostController extends Controller
     {
         $user = auth()->user();
 
-        if ($user->bookmarks()->where('post_id', $post->id)->exists()) {
-            return response()->json(['error' => 'Post already bookmarked'], 400);
+        if ($post->isBookmarkedBy($user)) {
+            return response()->json(['error' => 'Post already bookmarked'], 409);
         }
 
         $user->bookmarks()->attach($post);
@@ -101,7 +117,7 @@ class PostController extends Controller
     {
         $user = auth()->user();
 
-        if (!$user->bookmarks()->where('post_id', $post->id)->exists()) {
+        if (!$post->isBookmarkedBy($user)) {
             return response()->json(['error' => 'Post not bookmarked'], 400);
         }
 
@@ -115,6 +131,12 @@ class PostController extends Controller
      */
     public function upvote(Post $post)
     {
+        $response = Gate::inspect('vote', $post);
+
+        if ($response->denied()) {
+            return response()->json(['error' => $response->message()], 403);
+        }
+
         $user = auth()->user();
 
         if ($user->votes()->where('post_id', $post->id)->exists()) {
@@ -140,6 +162,12 @@ class PostController extends Controller
      */
     public function downvote(Post $post)
     {
+        $response = Gate::inspect('vote', $post);
+
+        if ($response->denied()) {
+            return response()->json(['error' => $response->message()], 403);
+        }
+
         $user = auth()->user();
 
         if ($user->votes()->where('post_id', $post->id)->exists()) {
@@ -183,7 +211,7 @@ class PostController extends Controller
     {
         $upvoters = $post->votes()->wherePivot('direction', 1)->get();
 
-        return response()->json($upvoters, 200);
+        return response()->json(new UserCollection($upvoters));
     }
 
     /**
@@ -193,7 +221,7 @@ class PostController extends Controller
     {
         $downvoters = $post->votes()->wherePivot('direction', -1)->get();
 
-        return response()->json($downvoters, 200);
+        return response()->json(new UserCollection($downvoters));
     }
 
     /**
@@ -201,6 +229,8 @@ class PostController extends Controller
      */
     public function getComments(Post $post)
     {
-        return response()->json($post->comments()->get(), 200);
+        $comments = $post->comments;
+
+        return response()->json(new CommentCollection($comments));
     }
 }

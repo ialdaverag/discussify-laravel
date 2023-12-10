@@ -19,22 +19,29 @@ class LoginTest extends TestCase
      */
     public function test_login_successfully(): void
     {
+        // Create a password for the user
         $password = 'Password123.';
 
+        // Create a user
         User::factory()->create([
             'username' => 'testuser',
             'password' => bcrypt($password), 
         ]);
 
+        // Data to be sent in the request
         $data = [
             'username' => 'testuser',
             'password' => $password,
         ];
 
+        // Send a POST request to /api/auth/login
         $response = $this->postJson($this->route, $data);
-        $response
-            ->assertStatus(200)
-            ->assertJsonStructure(['access_token']);
+
+        // Assert that the response has status code 200
+        $response->assertStatus(200);
+
+        // Assert that the response contains correct JSON data
+        $response->assertJsonStructure(['access_token']);
     }
 
     /**
@@ -44,11 +51,15 @@ class LoginTest extends TestCase
      */
     public function test_login_fails_without_username(): void
     {
+        // Data to be sent in the request
         $data = [
             'password' => 'Password123.',
         ];
 
+        // Send a POST request to /api/auth/login
         $response = $this->postJson($this->route, $data);
+
+        // Assert that the response has status code 422
         $response
             ->assertStatus(422)
             ->assertJsonValidationErrors(['username']);
@@ -61,14 +72,19 @@ class LoginTest extends TestCase
      */
     public function test_login_fails_without_password(): void
     {
+        // Data to be sent in the request
         $data = [
             'username' => 'testuser',
         ];
 
+        // Send a POST request to /api/auth/login
         $response = $this->postJson($this->route, $data);
-        $response
-            ->assertStatus(422)
-            ->assertJsonValidationErrors(['password']);
+
+        // Assert that the response has status code 422
+        $response->assertStatus(422);
+
+        // Assert that the response has correct JSON data
+        $response->assertJsonValidationErrors(['password']);
     }
 
     /**
@@ -78,19 +94,25 @@ class LoginTest extends TestCase
      */
     public function test_login_with_invalid_username(): void
     {
+        // Create a password for the user
         $password = 'Password123.';
 
+        // Create a user
         User::factory()->create([
             'username' => 'testuser',
             'password' => bcrypt($password), 
         ]);
 
-        $invalidLoginData = [
+        // Data to be sent in the request
+        $data = [
             'username' => 'wrongusername', // incorrect username
             'password' => $password,
         ];
 
-        $response = $this->postJson($this->route, $invalidLoginData);
+        // Send a POST request to /api/auth/login
+        $response = $this->postJson($this->route, $data);
+
+        // Assert that the response has status code 401
         $response->assertStatus(401);
     }
 
@@ -101,19 +123,25 @@ class LoginTest extends TestCase
      */
     public function test_login_with_invalid_password(): void
     {
+        // Create a password for the user
         $password = 'Password123.';
 
+        // Create a user
         User::factory()->create([
             'username' => 'testuser',
             'password' => bcrypt($password), 
         ]);
 
-        $invalidLoginData = [
+        // Data to be sent in the request
+        $data = [
             'username' => 'testuser',
             'password' => 'wrongpassword', // incorrect password
         ];
 
-        $response = $this->postJson($this->route, $invalidLoginData);
+        // Send a POST request to /api/auth/login
+        $response = $this->postJson($this->route, $data);
+
+        // Assert that the response has status code 401
         $response->assertStatus(401);
     }
 }
