@@ -3,12 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Models\Comment;
+use App\Models\Community;
+use App\Models\Post;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 
-use App\Http\Requests\CommentStoreRequest;
-use App\Http\Requests\CommentUpdateRequest;
+use App\Http\Requests\Comment\StoreRequest;
+use App\Http\Requests\Comment\UpdateRequest;
 use App\Http\Resources\CommentResource;
 
 class CommentController extends Controller
@@ -20,7 +22,14 @@ class CommentController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('auth:api', ['except' => ['index', 'show']]);
+        $this->middleware('auth:api', ['except' => 
+            [
+                'index', 
+                'show',
+                'getUpvoters',
+                'getDownvoters'
+            ]
+        ]);
     }
 
     /**
@@ -34,8 +43,16 @@ class CommentController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(CommentStoreRequest $request)
+    public function store(StoreRequest $request)
     {
+        $post = Post::findOrFail($request->post_id);
+        
+        $response = Gate::inspect('create', [Comment::class, $post->community]);
+
+        if ($response->denied()) {
+            return response()->json(['error' => $response->message()], 403);
+        }
+
         $validated = $request->validated();
 
         $comment = new Comment($validated);
@@ -63,10 +80,12 @@ class CommentController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(CommentUpdateRequest $request, Comment $comment)
+    public function update(UpdateRequest $request, Comment $comment)
     {
-        if (Gate::denies('update-comment', $comment)) {
-            return response()->json(['error' => 'Unauthorized'], 403);
+        $response = Gate::inspect('update', $comment);
+
+        if ($response->denied()) {
+            return response()->json(['error' => $response->message()], 403);
         }
 
         $validated = $request->validated();
@@ -81,8 +100,10 @@ class CommentController extends Controller
      */
     public function destroy(Comment $comment)
     {
-        if (Gate::denies('delete-comment', $comment)) {
-            return response()->json(['error' => 'Unauthorized'], 403);
+        $response = Gate::inspect('delete', $comment);
+
+        if ($response->denied()) {
+            return response()->json(['error' => $response->message()], 403);
         }
 
         $comment->delete();

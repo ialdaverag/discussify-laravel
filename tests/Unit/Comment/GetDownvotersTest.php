@@ -10,27 +10,31 @@ use Tests\TestCase;
 
 class GetDownvotersTest extends TestCase
 {
+    private $route = '/api/comment/%s/downvoters';
+
     use RefreshDatabase;
 
     public function test_get_downvoters_successfully()
     {
-        $user = User::factory()->create();
+        // Create a comment
         $comment = Comment::factory()->create();
 
-        $user->votes()->attach($comment, ['direction' => -1]);
+        // Send a request to the API as the user
+        $response = $this->getJson(sprintf($this->route, $comment->id));
 
-        $response = $this->actingAs($user)->getJson("/api/comment/{$comment->id}/downvoters");
-
+        // Assert that the response has status code 200
         $response->assertStatus(200);
     }
 
     public function test_get_downvoters_for_non_existing_comment()
     {
-        $user = User::factory()->create();
+        // ID of a comment that doesn't exist
         $nonExistingCommentId = 123456; 
 
-        $response = $this->actingAs($user)->getJson("/api/comment/{$nonExistingCommentId}/downvoters");
+        // Send a request to the API as the user
+        $response = $this->getJson(sprintf($this->route, $nonExistingCommentId));
 
+        // Assert that the response has status code 404
         $response->assertStatus(404);
     }
 }
